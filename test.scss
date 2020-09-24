@@ -1,0 +1,161 @@
+@charset "utf-8";
+// 一.Sass-变量定义--重点
+// 1.变量：必须是$符号开头，后面紧跟变量名，变量名称和变量值之间要使用冒号:,如果值后面加上[!default]就表示默认值
+// 普通变量：仅仅可以做css属性值的。
+// 特殊变量：变量作为属性或者其他的特殊情况，#{$variable}的形式进行调用。
+// 2.变量适用范围
+// 变量值可以参与任意的运算。
+// 页面中公共的值(颜色,字体大小,尺寸...)
+
+$size:100px;
+$color:#666;
+$gray-base:              #000 !default;
+$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
+$gray-dark:              lighten($gray-base, 20%) !default;   // #333
+$gray:                   lighten($gray-base, 33.5%) !default; // #555
+$gray-light:             lighten($gray-base, 46.7%) !default; // #777
+$gray-lighter:           lighten($gray-base, 93.5%) !default; // #eee
+
+$brand-primary:         darken(#428bca, 6.5%) !default; // #337ab7
+$brand-success:         #5cb85c !default;
+$brand-info:            #5bc0de !default;
+$brand-warning:         #f0ad4e !default;
+$brand-danger:          #d9534f !default;
+
+$box1:box1;
+$w:width;
+
+.#{$box1}{
+    #{$w}: $size;
+    height: $size;
+    background: $color;
+}
+
+// 二.注释 - 重点
+//单行注释：编译后不显示。
+
+/*多行注释：编译后显示，压缩后不显示*/
+
+/*!"重要注释"。压缩模式也会保留这行注释，通常可以用于声明版权信息。*/
+
+// 三.Sass-嵌套--重点
+// 如果生成的选择器超过五层，意味着影响性能。
+// 在 SASS 中通过&符号引用父属性
+
+*{
+    margin: 0;
+    padding: 0;
+}
+nav{
+    ul{
+        overflow: hidden;
+        li{
+            list-style: none;
+            width: 100px;
+            height: 40px;
+            border:1px solid black;
+            float: left;
+            text-align: center;
+            line-height: 40px;
+        }
+        &{
+            width: 408px;
+            margin: 100px auto;
+        }
+    }
+}
+
+// 四.Sass-mixin函数--重点
+// sass 中可以通过@mixin 声明混合（混合宏），可以传递参数，参数名称以$开始，多个参数之间使用逗号分隔，@mixin 的混合代码块由@include 来调用。
+@mixin boderstyle($size:1px,$style:solid,$color:black){
+    border:$size $style $color;
+}
+@mixin ellipsis($w:300px,$h:50px){
+    width: $w;
+    height: $h;
+    line-height: $h;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+@mixin opacityvalue($opactiy:0.5){
+    opacity: $opactiy;
+    filter: alpha(opacity = $opactiy * 100);
+}
+.box2{
+    @include boderstyle(red,5px,dashed);
+    @include ellipsis;
+    @include opacityvalue;
+}
+
+// 五.Sass-继承扩展--@extend--重点   - 群组选择器
+// 在 SASS 中，通过继承/扩展来减少重复代码，可以让一个选择器去继承另一个选择中所有的样式，子类的样式(占位继承--%)
+// 普通继承:继承当前选择器里面所有的属性,包括选择器下面的子元素。继承公共属性、多次继承。
+// h1{
+//     font-size: 20px;
+//     color:skyblue;
+// }
+// h2{
+//     @extend h1;
+// }
+
+%h1{
+    font-size: 20px;
+    color:skyblue;
+}
+h2{
+    @extend %h1;
+}
+
+// 六.局部文件 - 维护项目的核心.
+// CSS 本身包含一个指令@import，但是 CSS 中的@import 每次执行都会发送一次新的请求都会消耗一定的资源。
+// sass局部文件的文件名以下划线开头。sass就不会在编译此文件
+// @import 导入编译，导入的位置，编译后的位置.
+// 导入文件时可以忽略前面的下划线和扩展名。
+@import "111";
+
+// 七.Sass-判断语句 - 媒体查询
+$num:12px;
+@if $num > 14px {
+    .box1{
+        color: blue; 
+    }
+}@else {
+    .box1{
+        color: red; 
+    }
+}
+
+// 八.循环在 SASS 中用于重复处理一组指令--重点
+// @for $var from <开始值> through <结束值>
+// @for $var from <start> to <end>
+//@each对in后面的值进行顺序遍历,遍历的值是没有规律的
+
+// @for $num from 1 to 10{
+//     .box#{$num}{
+//         width: $num * 50px;
+//         height: 50px;
+//     }
+// }
+
+// @for $num from 1 through 10{
+//     .box#{$num}{
+//         width: $num * 50px;
+//         height: 50px;
+//     }
+// }
+
+@each $num in mm,bb,xx {
+    .box-#{$num}{
+        width: 50px;
+        height: 50px;
+    }
+}
+
+//函数
+// @function fn() {
+//     @return #abcdef;
+// }
+// body {
+//     background-color: fn();
+// }
