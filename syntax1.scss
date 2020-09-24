@@ -1,0 +1,210 @@
+@charset "utf-8";
+@import "top";
+@import "header";
+// 一.Sass-变量定义--重点
+// 1.变量：必须是$符号开头，后面紧跟变量名，变量名称和变量值之间要使用冒号:,如果值后面加上[!default]就表示默认值
+// 普通变量：仅仅可以做css属性值的。
+// 特殊变量：变量作为属性或者其他的特殊情况，#{$variable}的形式进行调用。
+// 2.变量适用范围
+// 变量值可以参与任意的运算。
+// 页面中公共的值(颜色,字体大小,尺寸...)
+$pagewidth:1190px;
+$bgcolor:#abcdef;
+$t:text-decoration;
+$n:none;
+$fontsize:14px;
+.box {
+    background-color: $bgcolor;
+    #{$t}: $n;
+    font-size: $fontsize + 2;
+    font-size: $fontsize - 2;
+    font-size: $fontsize * 2;
+    font-size: $fontsize / 2;
+    font-size: 12+2px;
+}
+
+// @for $i from 1 to 10 {
+//     .box_#{$i} {
+//         width: $i*100px;
+//     }
+// }
+// 二.注释 - 重点
+//单行注释：编译后不显示。
+
+/*多行注释：编译后显示，压缩后不显示*/
+
+
+/*!"重要注释"。压缩模式也会保留这行注释，通常可以用于声明版权信息。*/
+
+// 三.Sass-嵌套--重点
+// 如果生成的选择器超过五层，意味着影响性能。
+// 在 SASS 中通过&符号引用父属性
+// .header {
+//     .left {
+//         width: $pagewidth;
+//         ul {
+//             list-style: $n;
+//         }
+//         li {
+//             line-height: 24px;
+//             a {
+//                 #{$t}: $n;
+//             }
+//             &:hover {
+//                 background-color: $bgcolor;
+//             }
+//         }
+//     }
+//     .middle {
+//         width: $pagewidth;
+//         ul {
+//             list-style: $n;
+//             li {
+//                 line-height: 24px;
+//             }
+//         }
+//     }
+//     .right {
+//         width: $pagewidth;
+//         ul {
+//             list-style: $n;
+//             li {
+//                 line-height: 24px;
+//             }
+//         }
+//     }
+// }
+// 四.Sass-mixin函数--重点
+// sass 中可以通过@mixin 声明混合（混合宏），可以传递参数，参数名称以$开始，多个参数之间使用逗号分隔，@mixin 的混合代码块由@include 来调用。
+// 声明一个混合
+@mixin borderstyle($style:solid, $size:1px, $color:#ccc) {
+    border: $size $style $color;
+}
+
+@mixin boxsize($w:300px, $h:30px) {
+    width: $w;
+    height: $h;
+    line-height: $h;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@mixin opacityvalue($opacity:0.5) {
+    opacity: $opacity;
+    filter: alpha(opacity=$opacity*100);
+}
+
+@mixin positionleft($value, $left, $top) {
+    position: $value;
+    left: $left;
+    top: $top;
+}
+
+@mixin positionright($value, $right, $bottom) {
+    position: $value;
+    right: $right;
+    bottom: $bottom;
+}
+
+@mixin marginvalue($t, $r, $b, $l) {
+    margin: $t, $r, $b, $l;
+}
+
+@mixin css3value($v:14px) {
+    -webkit-font-size: $v;
+    -moz-font-size: $v;
+    -ms-font-size: $v;
+    -o-font-size: $v;
+}
+
+// .header {
+//     @include borderstyle;
+//     @include borderstyle(10px, dashed, red);
+// }
+// p {
+//     @include boxsize;
+//     @include borderstyle;
+//     @include opacityvalue;
+//     @include positionleft(absolute, 0, 0);
+//     @include css3value
+// }
+// 五.Sass-继承扩展--@extend--重点   - 群组选择器
+// 在 SASS 中，通过继承/扩展来减少重复代码，可以让一个选择器去继承另一个选择中所有的样式，子类的样式(占位继承--%)
+// 普通继承:继承当前选择器里面所有的属性,包括选择器下面的子元素。继承公共属性、多次继承。
+// h1 {
+//     width: $pagewidth;
+//     height: $pagewidth/10;
+// }
+// h1 a {
+//     #{$t}: $n;
+// }
+// h2 {
+//     @extend h1;//继承
+//     font-size: 14px;//私有属性
+// }
+// 占位继承：被继承的选择器编译后不可见。名称前添加%
+// %h1 {
+//     width: $pagewidth;
+//     height: $pagewidth/10;
+// }
+// h2 {
+//     @extend %h1; //继承
+//     font-size: 14px; //私有属性
+// }
+// 六.局部文件 - 维护项目的核心.
+// CSS 本身包含一个指令@import，但是 CSS 中的@import 每次执行都会发送一次新的请求都会消耗一定的资源。
+// sass局部文件的文件名以下划线开头。sass就不会在编译此文件
+// @import 导入编译，导入的位置，编译后的位置.
+// 导入文件时可以忽略前面的下划线和扩展名。
+// @import "nav";
+// @import "banner";
+// 七.Sass-判断语句 - 媒体查询
+// $num:12px;
+// @if $num>0 {
+//     .box1 {
+//         font-size: $num;
+//     }
+// }
+// @else {
+//     .box2 {
+//         font-size: $num+4;
+//     }
+// }
+// 八.循环在 SASS 中用于重复处理一组指令--重点
+// @for $var from <开始值> through <结束值>
+// @for $var from <start> to <end>
+// @for $i from 1 to 10 {
+//     //$i:1-9
+//     .box_#{$i} {
+//         width: $i*100px;
+//     }
+// }
+// @for $i from 1 through 10 {
+//     //$i:1-10
+//     .div_#{$i} {
+//         width: $i*100px;
+//     }
+// }
+//@each
+//对in后面的值进行顺序遍历,遍历的值是没有规律的
+// @each $var in zhangsan,lisi,wangwu {
+//     .#{$var}-icon {
+//         background-image: url('/images/#{$var}.png');
+//     }
+// }
+// @each $direction in top,
+// right,
+// left,
+// bottom {
+//     .main_#{$direction} {
+//         width: 100px;
+//     }
+// }
+//函数
+// @function fn() {
+//     @return #abcdef;
+// }
+// body {
+//     background-color: fn();
+// }
